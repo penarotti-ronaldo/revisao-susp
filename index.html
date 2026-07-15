@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado - SUSP (Lei nº 13.675/2018)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            color: #1a3c6e;
+            border-bottom: 3px solid #1a3c6e;
+            padding-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #555;
+            margin: 10px 0 20px 0;
+            font-size: 16px;
+        }
+
+        .subtitle strong {
+            color: #1a3c6e;
+        }
+
+        .questao {
+            background: #f8faff;
+            border: 1px solid #dde4f0;
+            border-radius: 10px;
+            padding: 18px 20px 12px 20px;
+            margin: 16px 0;
+            transition: background 0.2s;
+        }
+
+        .questao.correta {
+            background: #e6f7e6;
+            border-color: #28a745;
+        }
+
+        .questao.errada {
+            background: #fde8e8;
+            border-color: #dc3545;
+        }
+
+        .questao .pergunta {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #1a2a4a;
+        }
+
+        .questao .tema {
+            display: inline-block;
+            font-size: 11px;
+            background: #1a3c6e;
+            color: #fff;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+
+        .questao .tipo {
+            display: inline-block;
+            font-size: 11px;
+            background: #6c757d;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-left: 6px;
+            font-weight: normal;
+        }
+
+        .alternativas {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .alternativa {
+            background: #fff;
+            border: 2px solid #d0d7e6;
+            border-radius: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 15px;
+        }
+
+        .alternativa:hover:not(.bloqueado) {
+            background: #eaf0fa;
+            border-color: #1a3c6e;
+        }
+
+        .alternativa.correta {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .alternativa.errada {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .alternativa.bloqueado {
+            cursor: default;
+            opacity: 0.9;
+        }
+
+        .alternativa .feedback {
+            display: none;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .alternativa.correta .feedback {
+            display: inline;
+            color: #28a745;
+        }
+
+        .alternativa.errada .feedback {
+            display: inline;
+            color: #dc3545;
+        }
+
+        .alternativa .label {
+            font-weight: bold;
+            color: #555;
+            margin-right: 6px;
+        }
+
+        .resultado {
+            background: #1a3c6e;
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            font-size: 18px;
+        }
+
+        .resultado .acertos {
+            background: #28a745;
+            padding: 6px 18px;
+            border-radius: 30px;
+        }
+
+        .resultado .erros {
+            background: #dc3545;
+            padding: 6px 18px;
+            border-radius: 30px;
+        }
+
+        .resultado .total {
+            background: #6c757d;
+            padding: 6px 18px;
+            border-radius: 30px;
+        }
+
+        .btn-reiniciar {
+            background: #ffc107;
+            color: #1a3c6e;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .btn-reiniciar:hover {
+            background: #e0a800;
+            transform: scale(1.02);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .legenda-temas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin: 15px 0 20px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .legenda-temas span {
+            font-size: 12px;
+            background: #1a3c6e;
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 20px;
+        }
+
+        .legenda-temas .prazo {
+            background: #dc3545;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            .resultado {
+                flex-direction: column;
+                gap: 8px;
+                font-size: 16px;
+            }
+            .alternativa {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            .legenda-temas span {
+                font-size: 10px;
+                padding: 2px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1>📝 SIMULADO - SUSP</h1>
+        <p class="subtitle"><strong>Lei nº 13.675/2018 - Sistema Único de Segurança Pública</strong></p>
+        <p class="subtitle">30 questões sobre Surgimento, Diretrizes, Instituições, Organização, Integração, Governança, Papel da PM e PRAZOS</p>
+
+        <div class="legenda-temas">
+            <span>📌 Surgimento e Diretrizes</span>
+            <span>🏛️ Instituições Integrantes</span>
+            <span>🗺️ Organização Federativa</span>
+            <span>⚖️ Integração com Justiça</span>
+            <span>📋 Conselhos e Controle</span>
+            <span>📊 Planejamento e Governança</span>
+            <span>👮 Papel da PM</span>
+            <span class="prazo">⏰ PRAZOS LEGAIS</span>
+        </div>
+
+        <div id="questoes-container"></div>
+
+        <div class="resultado" id="resultado">
+            <span>✅ <span class="acertos" id="acertos">0</span> ACERTOS</span>
+            <span>❌ <span class="erros" id="erros">0</span> ERROS</span>
+            <span>📊 <span class="total" id="total">0</span> RESPONDIDAS</span>
+        </div>
+
+        <div class="text-center">
+            <button class="btn-reiniciar" onclick="reiniciar()">🔄 REINICIAR SIMULADO</button>
+        </div>
+
+    </div>
+
+    <script>
+        // ================================================================
+        //  DADOS DAS 30 QUESTÕES - SUSP (Lei nº 13.675/2018)
+        //  Com ênfase em PRAZOS e temas variados
+        // ================================================================
+        var questoesData = [
+            // ========== SURGIMENTO E DIRETRIZES (Qs 1-5) ==========
+            {
+                id: 1,
+                tema: "Surgimento e Diretrizes",
+                pergunta: "A Lei nº 13.675/2018, que instituiu o SUSP, entrou em vigor na data de sua publicação oficial, sem carência.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true
+            },
+            {
+                id: 2,
+                tema: "Surgimento e Diretrizes",
+                pergunta: "A PNSPDS tem como diretriz a realização de ações de policiamento de proximidade, com foco na resolução de problemas comunitários.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 3,
+                tema: "Surgimento e Diretrizes",
+                pergunta: "Entre os princípios da PNSPDS, NÃO se inclui:",
+                alternativas: [
+                    "Eficiência na prevenção e controle de infrações penais.",
+                    "Publicidade das informações não sigilosas.",
+                    "Promoção da produção de conhecimento sobre segurança pública.",
+                    "proteção, valorização e reconhecimento dos profissionais de segurança pública.",
+                    "Participação e controle social."
+                ],
+                correta: 3
+            },
+            {
+                id: 4,
+                tema: "Surgimento e Diretrizes",
+                pergunta: "A PNSPDS deve priorizar políticas de redução da letalidade violenta, com ênfase para grupos vulneráveis, como jovens negros e mulheres.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 5,
+                tema: "Surgimento e Diretrizes",
+                pergunta: "Qual das alternativas NÃO é uma diretriz da PNSPDS?",
+                alternativas: [
+                    "Atendimento imediato ao cidadão.",
+                    "Formação e capacitação continuada dos profissionais.",
+                    "proteção, valorização e reconhecimento dos profissionais de segurança pública;.",
+                    "Padronização de estruturas, capacitação e equipamentos.",
+                    "Sistematização e compartilhamento de informações."
+                ],
+                correta: 2
+            },
+
+            // ========== INSTITUIÇÕES INTEGRANTES (Qs 6-10) ==========
+            {
+                id: 6,
+                tema: "Instituições Integrantes",
+                pergunta: "Os Conselhos de Segurança Pública são considerados integrantes estratégicos do SUSP, segundo a Lei.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 7,
+                tema: "Instituições Integrantes",
+                pergunta: "A Secretaria Nacional de Proteção e Defesa Civil (Sedec) e a Secretaria Nacional de Política sobre Drogas (Senad) são integrantes operacionais do SUSP.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 8,
+                tema: "Instituições Integrantes",
+                pergunta: "Os agentes de trânsito e a guarda portuária NÃO são considerados integrantes operacionais do SUSP.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true
+            },
+            {
+                id: 9,
+                tema: "Instituições Integrantes",
+                pergunta: "Além da União, Estados, DF e Municípios, são integrantes estratégicos do SUSP:",
+                alternativas: [
+                    "Os Conselhos de Segurança Pública e Defesa Social.",
+                    "As polícias civis e militares.",
+                    "Os corpos de bombeiros militares.",
+                    "As guardas municipais.",
+                    "Os institutos oficiais de criminalística."
+                ],
+                correta: 0
+            },
+            {
+                id: 10,
+                tema: "Instituições Integrantes",
+                pergunta: "O órgão central do SUSP, previsto na Lei nº 13.675/2018, é o Ministério Extraordinário da Segurança Pública, responsável pela coordenação do Sistema.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+
+            // ========== ORGANIZAÇÃO FEDERATIVA (Qs 11-14) ==========
+            {
+                id: 11,
+                tema: "Organização Federativa",
+                pergunta: "Compete à União estabelecer a PNSPDS, e aos Estados, DF e Municípios estabelecer suas políticas observando as diretrizes nacionais, especialmente para enfrentamento de crimes interestaduais e transnacionais.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 12,
+                tema: "Organização Federativa",
+                pergunta: "Os sistemas estaduais, distrital e municipais de segurança pública têm liberdade de organização, mas devem respeitar o disposto na Lei nº 13.675/2018.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 13,
+                tema: "Organização Federativa",
+                pergunta: "Os Estados, o Distrito Federal e os Municípios têm prazo de 2 (dois) anos para elaborar e implantar seus planos de segurança pública com base no Plano Nacional.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 14,
+                tema: "Organização Federativa",
+                pergunta: "A União pode apoiar Estados, DF e Municípios na implementação do SUSP, quando estes não tiverem condições técnicas e operacionais.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+
+            // ========== INTEGRAÇÃO COM ÓRGÃOS DE JUSTIÇA (Qs 15-18) ==========
+            {
+                id: 15,
+                tema: "Integração com Justiça",
+                pergunta: "A Lei nº 13.675/2018 prevê a colaboração do Poder Judiciário, Ministério Público e Defensoria Pública na elaboração de estratégias para alcançar os objetivos da PNSPDS.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 16,
+                tema: "Integração com Justiça",
+                pergunta: "Os Conselhos de Segurança Pública NÃO incluem representantes do Poder Judiciário, apenas membros do Executivo e da sociedade civil.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true
+            },
+            {
+                id: 17,
+                tema: "Integração com Justiça",
+                pergunta: "A integração entre os Poderes Legislativo, Executivo e Judiciário é prevista como diretriz para o aprimoramento e aplicação da legislação penal.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 18,
+                tema: "Integração com Justiça",
+                pergunta: "Compete ao Poder Legislativo acompanhar as avaliações das políticas de segurança pública do respectivo ente federado.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+
+            // ========== CONSELHOS E CONTROLE (Qs 19-21) ==========
+            {
+                id: 19,
+                tema: "Conselhos e Controle",
+                pergunta: "Os Conselhos de Segurança Pública têm natureza deliberativa, podendo determinar a execução de políticas públicas.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true
+            },
+            {
+                id: 20,
+                tema: "Conselhos e Controle",
+                pergunta: "Os membros da sociedade civil nos Conselhos de Segurança Pública terão mandato de 2 (dois) anos, permitida apenas uma recondução.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 21,
+                tema: "Conselhos e Controle",
+                pergunta: "A União, Estados, DF e Municípios devem instituir ouvidorias autônomas para receber representações, elogios e sugestões sobre as ações do SUSP.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+
+            // ========== PLANEJAMENTO E GOVERNANÇA (Qs 22-26) ==========
+            {
+                id: 22,
+                tema: "Planejamento e Governança",
+                pergunta: "O Plano Nacional de Segurança Pública e Defesa Social terá duração de 10 (dez) anos, devendo ser atualizado após esse período.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 23,
+                tema: "Planejamento e Governança",
+                pergunta: "O Sinesp é o Sistema Nacional de Informações de Segurança Pública, Prisionais, de Rastreabilidade de Armas e Munições, de Material Genético, de Digitais e de Drogas.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 24,
+                tema: "Planejamento e Governança",
+                pergunta: "Os entes federados que deixarem de fornecer ou atualizar seus dados no Sinesp poderão ser penalizados com a suspensão de repasses de recursos da União.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 25,
+                tema: "Planejamento e Governança",
+                pergunta: "O Ministério Extraordinário da Segurança Pública deve fixar metas de excelência para o SUSP com periodicidade bienal.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true
+            },
+            {
+                id: 26,
+                tema: "Planejamento e Governança",
+                pergunta: "A avaliação do Plano Nacional de Segurança Pública deve ser realizada anualmente, com a primeira avaliação ocorrendo no segundo ano de vigência da Lei.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+
+            // ========== PAPEL DA PM (Qs 27-28) ==========
+            {
+                id: 27,
+                tema: "Papel da PM",
+                pergunta: "As polícias militares, no âmbito do SUSP, atuam como integrantes operacionais, devendo executar o policiamento ostensivo e a preservação da ordem pública.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+            {
+                id: 28,
+                tema: "Papel da PM",
+                pergunta: "A Lei nº 13.675/2018 determina que as atividades das polícias militares serão aferidas, entre outros fatores, pela incidência de infrações penais em determinada área, conforme parâmetros do Sinesp.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true
+            },
+
+            // ========== PRAZOS LEGAIS (Qs 29-30) ==========
+            {
+                id: 29,
+                tema: "Prazos Legais",
+                pergunta: "A Lei nº 13.675/2018 entrou em vigor após decorridos quantos dias de sua publicação oficial?",
+                alternativas: [
+                    "15 dias.",
+                    "30 dias.",
+                    "45 dias.",
+                    "60 dias.",
+                    "90 dias."
+                ],
+                correta: 1
+            },
+            {
+                id: 30,
+                tema: "Prazos Legais",
+                pergunta: "As conferências de segurança pública para debater as diretrizes dos planos nacional, estaduais e municipais devem ser realizadas a cada:",
+                alternativas: [
+                    "2 anos.",
+                    "3 anos.",
+                    "4 anos.",
+                    "5 anos.",
+                    "10 anos."
+                ],
+                correta: 3
+            }
+        ];
+
+        // ================================================================
+        //  ESTADO DA APLICAÇÃO
+        // ================================================================
+        var estado = {
+            respondidas: 0,
+            acertos: 0,
+            erros: 0,
+            bloqueadas: {}
+        };
+
+        var letras = ["A", "B", "C", "D", "E"];
+
+        // ================================================================
+        //  RENDERIZAR QUESTÕES
+        // ================================================================
+        function renderizarQuestoes() {
+            var container = document.getElementById("questoes-container");
+            container.innerHTML = "";
+
+            for (var q = 0; q < questoesData.length; q++) {
+                var questao = questoesData[q];
+                
+                var divQuestao = document.createElement("div");
+                divQuestao.className = "questao";
+                divQuestao.id = "questao-" + questao.id;
+
+                var pergunta = document.createElement("div");
+                pergunta.className = "pergunta";
+                
+                var tipoTexto = questao.isVF ? "V/F" : "M.E.";
+                var temaClass = questao.tema === "Prazos Legais" ? "prazo" : "";
+                pergunta.innerHTML = questao.id + ". " + questao.pergunta + 
+                    ' <span class="tema ' + temaClass + '">' + questao.tema + '</span>' +
+                    ' <span class="tipo">' + tipoTexto + '</span>';
+                divQuestao.appendChild(pergunta);
+
+                var divAlt = document.createElement("div");
+                divAlt.className = "alternativas";
+
+                for (var i = 0; i < questao.alternativas.length; i++) {
+                    var alt = document.createElement("div");
+                    alt.className = "alternativa";
+                    alt.dataset.indice = i;
+                    alt.dataset.questaoId = questao.id;
+                    alt.id = "alt-" + questao.id + "-" + i;
+
+                    var label = document.createElement("span");
+                    label.className = "label";
+                    
+                    if (questao.isVF) {
+                        label.textContent = i === 0 ? "V)" : "F)";
+                    } else {
+                        label.textContent = letras[i] + ")";
+                    }
+                    
+                    alt.appendChild(label);
+
+                    var txt = document.createTextNode(" " + questao.alternativas[i]);
+                    alt.appendChild(txt);
+
+                    var feedback = document.createElement("span");
+                    feedback.className = "feedback";
+                    feedback.textContent = " ✓";
+                    alt.appendChild(feedback);
+
+                    alt.addEventListener("click", function(e) {
+                        var target = e.currentTarget;
+                        var questaoId = parseInt(target.dataset.questaoId);
+                        var indice = parseInt(target.dataset.indice);
+                        responderQuestao(questaoId, indice);
+                    });
+
+                    divAlt.appendChild(alt);
+                }
+
+                divQuestao.appendChild(divAlt);
+                container.appendChild(divQuestao);
+            }
+
+            atualizarResultado();
+        }
+
+        // ================================================================
+        //  RESPONDER QUESTÃO
+        // ================================================================
+        function responderQuestao(questaoId, indiceSelecionado) {
+            if (estado.bloqueadas[questaoId]) {
+                return;
+            }
+
+            var questao = null;
+            for (var q = 0; q < questoesData.length; q++) {
+                if (questoesData[q].id === questaoId) {
+                    questao = questoesData[q];
+                    break;
+                }
+            }
+            
+            if (!questao) return;
+
+            var isCorreta = (indiceSelecionado === questao.correta);
+
+            estado.bloqueadas[questaoId] = true;
+            estado.respondidas++;
+
+            if (isCorreta) {
+                estado.acertos++;
+            } else {
+                estado.erros++;
+            }
+
+            var divQuestao = document.getElementById("questao-" + questaoId);
+            if (isCorreta) {
+                divQuestao.className = "questao correta";
+            } else {
+                divQuestao.className = "questao errada";
+            }
+
+            var alternativas = divQuestao.querySelectorAll(".alternativa");
+            for (var i = 0; i < alternativas.length; i++) {
+                alternativas[i].classList.add("bloqueado");
+                if (i === questao.correta) {
+                    alternativas[i].classList.add("correta");
+                } else if (i === indiceSelecionado && !isCorreta) {
+                    alternativas[i].classList.add("errada");
+                }
+                alternativas[i].classList.remove("selecionada");
+            }
+
+            atualizarResultado();
+        }
+
+        // ================================================================
+        //  ATUALIZAR RESULTADO
+        // ================================================================
+        function atualizarResultado() {
+            document.getElementById("acertos").textContent = estado.acertos;
+            document.getElementById("erros").textContent = estado.erros;
+            document.getElementById("total").textContent = estado.respondidas;
+        }
+
+        // ================================================================
+        //  REINICIAR
+        // ================================================================
+        function reiniciar() {
+            estado = {
+                respondidas: 0,
+                acertos: 0,
+                erros: 0,
+                bloqueadas: {}
+            };
+            renderizarQuestoes();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        // ================================================================
+        //  INICIALIZAR
+        // ================================================================
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderizarQuestoes);
+        } else {
+            renderizarQuestoes();
+        }
+    </script>
+</body>
+</html>
